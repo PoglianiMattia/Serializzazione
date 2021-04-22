@@ -11,6 +11,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.util.Iterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -23,37 +24,34 @@ public class Serializzazione {
     /**
      * @param args the command line arguments
      */
-    public static void main(String[] args) {
-        Studente s = new Studente(12, "Andrea", "Del Conte");
+    public static void main(String[] args) throws ClassNotFoundException {
+        Thread t = new Thread(new Generatore());
+        t.start();
+        Studente[] arr = {new Studente(12, "Andrea", "Del Conte"),
+            new Studente(13, "Veronica", "Spina"),
+            new Studente(14, "suor", "Maricel")};
 
         try {
             FileOutputStream FO = new FileOutputStream("test.ser");
             ObjectOutputStream OS = new ObjectOutputStream(FO);
-            OS.writeObject(9);
-            OS.writeObject("ciao");
-            OS.writeFloat((float) 0.345);
-//            OS.writeObject(false);
-//            OS.writeObject('a');
+            OS.writeObject(arr);
             OS.flush();
             OS.close();
             FO.close();
 
-              FileInputStream FI = new FileInputStream("test.ser");
-              ObjectInputStream IS = new ObjectInputStream(FI);
-              int v1 = (int) IS.readObject();
-              System.out.println("v1: " + v1);
-              String v2 = (String) IS.readObject();
-              System.out.println("v2: " + v2);
-              float v3 = (float) (double) IS.readObject();
-              System.out.println("v3: " + v3);
-            
-            
+            FileInputStream FI = new FileInputStream("test.ser");
+            ObjectInputStream IS = new ObjectInputStream(FI);
+            Studente[] arrayStudenti = (Studente[]) IS.readObject();
+            for (Studente s : arrayStudenti) {
+                System.out.println(s.toString());
+            }
+
         } catch (FileNotFoundException ex) {
             System.out.println("Impossibile trovare il filr");
         } catch (IOException ex) {
             System.out.println("Hai rotto Java");
-        } catch (ClassNotFoundException ex) {
             Logger.getLogger(Serializzazione.class.getName()).log(Level.SEVERE, null, ex);
+
         }
 
     }
